@@ -32,9 +32,9 @@ export default (function(undefined) {
 				return
 			}
 
-			if ('warn' in console) {
+			if (`warn` in console) {
 				console.warn(`[BufferedObject] WARNING: ${msg}`)
-			} else if ('log' in console) {
+			} else if (`log` in console) {
 				console.log(`[BufferedObject] WARNING: ${msg}`)
 			}
 		},
@@ -66,7 +66,7 @@ export default (function(undefined) {
 		},
 
 		isString: function(v) {
-			return typeof(v) === 'string'
+			return typeof(v) === `string`
 		},
 
 		strReplace: function(str, src, replace) {
@@ -126,7 +126,7 @@ export default (function(undefined) {
 				 * buffered.
 				 */
 				case PROPNAME: {
-					if (char === '[') {
+					if (char === `[`) {
 						state = DATASIZE
 					} else {
 						propName += char
@@ -138,7 +138,7 @@ export default (function(undefined) {
 				 * data buffer.
 				 */
 				case DATASIZE: {
-					if (char === ']') {
+					if (char === `]`) {
 						state = DATAID_WAIT
 					} else {
 						if (!Helper.isDigit(char)) {
@@ -150,7 +150,7 @@ export default (function(undefined) {
 				} break
 
 				case DATAID_WAIT: {
-					if (char !== '@') {
+					if (char !== `@`) {
 						throw new Error(`Unexpected character "${char}, expected "@" instead.`)
 					} else {
 						state = DATAID
