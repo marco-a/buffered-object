@@ -33,7 +33,7 @@ export default (function(undefined) {
 			}
 
 			if ('warn' in console) {
-				console.warn(`[BufferedObject] WARNING ${msg}`)
+				console.warn(`[BufferedObject] WARNING: ${msg}`)
 			} else {
 				console.log(`[BufferedObject] WARNING: ${msg}`)
 			}
@@ -337,7 +337,7 @@ export default (function(undefined) {
 			})
 
 			if (validProperties !== bufferedProperties.length) {
-				Helper.warn(`BufferedObject some properties are missing. <${validProperties} != ${bufferedProperties.length}>`)
+				Helper.warn(`Some properties are missing. <${validProperties} != ${bufferedProperties.length}>`)
 			}
 
 			return obj
