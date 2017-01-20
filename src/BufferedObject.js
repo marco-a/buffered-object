@@ -34,7 +34,7 @@ export default (function(undefined) {
 
 			if ('warn' in console) {
 				console.warn(`[BufferedObject] WARNING: ${msg}`)
-			} else {
+			} else if ('log' in console) {
 				console.log(`[BufferedObject] WARNING: ${msg}`)
 			}
 		},
@@ -266,7 +266,11 @@ export default (function(undefined) {
 	let BufferedObject = function(obj, DataHolder) {
 		let bufferedProperties = getAllBufferedProperties(obj)
 		let buffers = {}
+		let numProps = bufferedProperties.length
 
+		/*
+		 * Receive all properties that need to be buffered.
+		 */
 		for (let bufferedProperty of bufferedProperties) {
 			buffers[bufferedProperty.path] = {
 				dataID: undefined,
@@ -274,6 +278,9 @@ export default (function(undefined) {
 			}
 		}
 
+		/*
+		 * Returns all informations for a given path.
+		 */
 		let _getChunksByPath = (path) => {
 			for (let bufferedProperty of bufferedProperties) {
 				if (bufferedProperty.path === path) {
@@ -322,7 +329,7 @@ export default (function(undefined) {
 							buffer.obj.insert(newValue)
 						}
 
-						parent[chunks.propName] = buffer.obj
+						parent[chunks.propName] = buffer.obj.get()
 
 						buffer.dataID = newDataID
 
@@ -336,8 +343,8 @@ export default (function(undefined) {
 				}
 			})
 
-			if (validProperties !== bufferedProperties.length) {
-				Helper.warn(`Some properties are missing. <${validProperties} != ${bufferedProperties.length}>`)
+			if (validProperties !== numProps) {
+				Helper.warn(`Some properties are missing. <${validProperties} != ${numProps}>`)
 			}
 
 			return obj
@@ -349,6 +356,10 @@ export default (function(undefined) {
 
 		this.update = (obj) => {
 			return _updateOrGet(obj, true)
+		}
+
+		this.toString = () => {
+			return `[BufferedObject<${numProps}>]`
 		}
 
 		_updateOrGet(obj, true)

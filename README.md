@@ -13,6 +13,8 @@ With `BufferedObject` you will be able to buffer any data without altering your 
 Instead of manually buffer each property `BufferedObject` will automatically buffer the specified properties:
 
 ```js
+import BufferedObject from 'buffered-object'
+
 let bufferMe = {
 	/*
 	 * This is needed so the buffer can be cleared on the fly.
@@ -28,5 +30,43 @@ let bufferMe = {
 	'cpuTemperature[100]@myDataID': 33
 }
 
-// For an example check src/example.js out!
+// Create our BufferedObject instance
+let buffer = new BufferedObject(bufferMe, DataContainer)
+
+// We can get our final object with the .get() method:
+let bufferNew1 = buffer.get()
+
+/*
+ {
+ 	cpuTemperature: [0, 0, 0, 0, 0, 0, 0, 0, 0, 33]
+ }
+ */
+console.log(bufferNew1)
+
+// ... and dynamically insert values with .update():
+let bufferNew2 = buffer.update({
+	'myDataID': 10,
+	'cpuTemperature[100]@myDataID': 99
+})
+
+/*
+ {
+ 	cpuTemperature: [0, 0, 0, 0, 0, 0, 0, 0, 99, 33]
+ }
+ */
+console.log(bufferNew2)
+
+// If we want to reset our buffer we need to change
+// the associated data ID value:
+let bufferNew3 = buffer.update({
+	'myDataID': 12,
+	'cpuTemperature[100]@myDataID': 99
+})
+
+/*
+ {
+ 	cpuTemperature: [0, 0, 0, 0, 0, 0, 0, 0, 99]
+ }
+ */
+console.log(bufferNew3)
 ```

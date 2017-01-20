@@ -48,7 +48,7 @@ let bufferedObject = new BufferedObject(exampleStructure, DataHolder)
  	cpuTemp: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 33 ]
  }
 */
-console.log(bufferedObject.get().cpuTemp.get())
+console.log(bufferedObject.get().cpuTemp)
 
 /*
  Will return
@@ -58,7 +58,7 @@ console.log(bufferedObject.get().cpuTemp.get())
  }
 */
 exampleStructure['cpuTemp[10]@dataID'] = 99
-console.log(bufferedObject.update(exampleStructure).cpuTemp.get())
+console.log(bufferedObject.update(exampleStructure).cpuTemp)
 
 /*
  Now we change the data ID
@@ -66,4 +66,4 @@ console.log(bufferedObject.update(exampleStructure).cpuTemp.get())
  */
 exampleStructure['dataID'] = 1338
 exampleStructure['cpuTemp[10]@dataID'] = 1337
-console.log(bufferedObject.update(exampleStructure).cpuTemp.get())
+console.log(bufferedObject.update(exampleStructure).cpuTemp)
