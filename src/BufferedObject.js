@@ -248,22 +248,22 @@ export default (function(undefined) {
 	 *		'cpuTemp[100]@dataID': 100
 	 *	}
 	 *
-	 *	let example = new BufferedObject(exampleStrucutre, DataHolder)
+	 *	let example = new BufferedObject(exampleStrucutre, DataContainer)
 	 *
 	 *	// Get the transformed object:
 	 *	let transformedExample = example.get()
 	 *
 	 *	// This will return:
 	 *	{
-	 *		cpuTemp: [Instance of DataHolder]
+	 *		cpuTemp: [DataContainer().get()]
 	 *	}
 	 *
 	 *	// Update with the same value
-	 *	// This will call [Instance of DataHolder].insert(theValue)
+	 *	// This will call [Instance of DataContainer].insert(theValue)
 	 *	// Also this will return the updated data structure
 	 *	example.update(exampleStructure)
 	 */
-	let BufferedObject = function(obj, DataHolder) {
+	let BufferedObject = function(obj, DataContainer) {
 		let bufferedProperties = getAllBufferedProperties(obj)
 		let buffers = {}
 		let numProps = bufferedProperties.length
@@ -322,7 +322,7 @@ export default (function(undefined) {
 						}
 
 						if (buffer.obj === undefined) {
-							buffer.obj = new DataHolder(chunks.dataSize)
+							buffer.obj = new DataContainer(chunks.dataSize)
 
 							buffer.obj.insert(newValue)
 						} else if (insert === true) {

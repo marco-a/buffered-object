@@ -1,9 +1,9 @@
 import BufferedObject from './BufferedObject.js'
 
 /**
- * DataHolder to be used with the buffered object.
+ * DataContainer to be used with BufferedObject.
  */
-let DataHolder = function(size) {
+let DataContainer = function(size) {
 	console.log(`Initializing dataholder with size of ${size}`)
 
 	let array    = []
@@ -34,36 +34,62 @@ let DataHolder = function(size) {
 	}
 }
 
-let exampleStructure = {
-	'dataID'            : 1337,
-	'cpuTemp[10]@dataID': 33
+let bufferMe = {
+	/*
+	 * This is needed so the buffer can be cleared on the fly.
+	 * The buffer will be automatically cleared when the value of
+	 * `myDataID` changes.
+	 */
+	'myDataID': 10,
+
+	/*
+	 * Create a property called `cpuTemperatue` for me with the size of `10`.
+	 * Clear the buffer on `myDataID` value change.
+	 */
+	'cpuTemperature[10]@myDataID': 33
 }
 
-let bufferedObject = new BufferedObject(exampleStructure, DataHolder)
+// Create our BufferedObject instance
+let buffer = new BufferedObject(bufferMe, DataContainer)
+
+// We can get our final object with the .get() method:
+let bufferNew1 = buffer.get()
 
 /*
- Will return
-
  {
- 	cpuTemp: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 33 ]
+    cpuTemperature: [0, 0, 0, 0, 0, 0, 0, 0, 0, 33]
  }
-*/
-console.log(bufferedObject.get().cpuTemp)
-
-/*
- Will return
-
- {
- 	cpuTemp: [ 0, 0, 0, 0, 0, 0, 0, 0, 99, 33 ]
- }
-*/
-exampleStructure['cpuTemp[10]@dataID'] = 99
-console.log(bufferedObject.update(exampleStructure).cpuTemp)
-
-/*
- Now we change the data ID
- This will reset all data.
  */
-exampleStructure['dataID'] = 1338
-exampleStructure['cpuTemp[10]@dataID'] = 1337
-console.log(bufferedObject.update(exampleStructure).cpuTemp)
+console.log(bufferNew1)
+
+// ... and dynamically insert values with .update():
+let bufferNew2 = buffer.update({
+    'myDataID': 10,
+    'cpuTemperature[10]@myDataID': 99
+})
+
+/*
+ {
+    cpuTemperature: [0, 0, 0, 0, 0, 0, 0, 0, 99, 33]
+ }
+ */
+console.log(bufferNew2)
+
+// If we want to reset our buffer we need to change
+// the associated data ID value:
+let bufferNew3 = buffer.update({
+    'myDataID': 12,
+    'cpuTemperature[10]@myDataID': 99
+})
+
+/*
+ {
+    cpuTemperature: [0, 0, 0, 0, 0, 0, 0, 0, 99]
+ }
+ */
+console.log(bufferNew3)
+
+// toString() will return the number of
+// buffered properties
+// ... or not? (WIP)
+console.log(`${bufferNew3}`)
