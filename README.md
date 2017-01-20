@@ -10,7 +10,7 @@ To accomplish this painlessly I have created this little helper library.
 
 With `BufferedObject` you will be able to buffer any data without altering your interface logic.
 
-Instead of manually buffer each property `BufferedObject` will automatically buffer the specified properties:
+Instead of manually buffering each property `BufferedObject` will automatically buffer the specified properties:
 
 ```js
 import BufferedObject from 'buffered-object'
