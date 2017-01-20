@@ -1,4 +1,4 @@
-# BufferedObject.js
+# buffered-object
 A small class to enable buffering WebSocket (or similar) packets!
 
 ## What is this?
@@ -73,3 +73,8 @@ console.log(bufferNew3)
 ## Can I use this in the browser?
 
 Yes, just use [browserify](http://npmjs.com/browserify) or [webpack](http://npmjs.com/webpack).
+
+## Why do you not use an options parameter instead?
+
+Because it is inconvenient and not flexible enough.
+The class is completely independent in this way.
