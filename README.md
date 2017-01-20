@@ -70,3 +70,6 @@ let bufferNew3 = buffer.update({
  */
 console.log(bufferNew3)
 ```
+## Can I use this in the browser?
+
+Yes, just use [browserify](http://npmjs.com/browserify) or [webpack](http://npmjs.com/webpack).
