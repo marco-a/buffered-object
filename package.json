@@ -1,0 +1,15 @@
+{
+  "name": "BufferedObject",
+  "version": "1.0.0",
+  "description": "A small class to enable buffering WebSocket (or similar) packets!",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "./compile.sh"
+  },
+  "author": "Marco Agnoli",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.22.2"
+  }
+}
