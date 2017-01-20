@@ -1,4 +1,4 @@
-import BufferedObject from `./BufferedObject.js`
+import BufferedObject from './BufferedObject.js'
 
 /**
  * DataContainer to be used with BufferedObject.
@@ -40,13 +40,13 @@ let bufferMe = {
 	 * The buffer will be automatically cleared when the value of
 	 * `myDataID` changes.
 	 */
-	`myDataID`: 10,
+	'myDataID': 10,
 
 	/*
 	 * Create a property called `cpuTemperatue` for me with the size of `10`.
 	 * Clear the buffer on `myDataID` value change.
 	 */
-	`cpuTemperature[10]@myDataID`: 33
+	'cpuTemperature[10]@myDataID': 33
 }
 
 // Create our BufferedObject instance
@@ -57,20 +57,20 @@ let bufferNew1 = buffer.get()
 
 /*
  {
-    cpuTemperature: [0, 0, 0, 0, 0, 0, 0, 0, 0, 33]
+ 	cpuTemperature: [0, 0, 0, 0, 0, 0, 0, 0, 0, 33]
  }
  */
 console.log(bufferNew1)
 
 // ... and dynamically insert values with .update():
 let bufferNew2 = buffer.update({
-    `myDataID`: 10,
-    `cpuTemperature[10]@myDataID`: 99
+	'myDataID': 10,
+	'cpuTemperature[10]@myDataID': 99
 })
 
 /*
  {
-    cpuTemperature: [0, 0, 0, 0, 0, 0, 0, 0, 99, 33]
+ 	cpuTemperature: [0, 0, 0, 0, 0, 0, 0, 0, 99, 33]
  }
  */
 console.log(bufferNew2)
@@ -78,13 +78,13 @@ console.log(bufferNew2)
 // If we want to reset our buffer we need to change
 // the associated data ID value:
 let bufferNew3 = buffer.update({
-    `myDataID`: 12,
-    `cpuTemperature[10]@myDataID`: 99
+	'myDataID': 12,
+	'cpuTemperature[10]@myDataID': 99
 })
 
 /*
  {
-    cpuTemperature: [0, 0, 0, 0, 0, 0, 0, 0, 99]
+ 	cpuTemperature: [0, 0, 0, 0, 0, 0, 0, 0, 99]
  }
  */
 console.log(bufferNew3)
