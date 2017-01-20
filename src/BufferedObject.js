@@ -27,7 +27,7 @@ export default (function(undefined) {
 	let debug = false
 
 	let Helper = {
-		warn: function(msg) {
+		warn: (msg) => {
 			if (debug !== true) {
 				return
 			}
@@ -39,11 +39,11 @@ export default (function(undefined) {
 			}
 		},
 
-		copyObject: function(obj) {
+		copyObject: (obj) => {
 			return JSON.parse(JSON.stringify(obj))
 		},
 
-		isDigit: function(char) {
+		isDigit: (char) => {
 			let digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 			for (let digit of digits) {
@@ -53,27 +53,27 @@ export default (function(undefined) {
 			return false
 		},
 
-		isArray: function(v) {
+		isArray: (v) => {
 			return Object.prototype.toString.call(v) === `[object Array]`
 		},
 
-		isObject: function(v) {
+		isObject: (v) => {
 			return Object.prototype.toString.call(v) === `[object Object]`
 		},
 
-		isPrimitive: function(v) {
+		isPrimitive: (v) => {
 			return !Helper.isArray(v) && !Helper.isObject(v)
 		},
 
-		isString: function(v) {
+		isString: (v) => {
 			return typeof(v) === `string`
 		},
 
-		strReplace: function(str, src, replace) {
+		strReplace: (str, src, replace) => {
 			return str.split(src).join(replace)
 		},
 
-		strContains: function(str, contains) {
+		strContains: (str, contains) => {
 			return str.indexOf(contains) >= 0
 		}
 	}
