@@ -4,11 +4,12 @@ A small class to enable buffering WebSocket (or similar) packets!
 ## What is this?
 
 Say you receive a WebSocket packet each second and now you want to buffer some data.
+
 For example the temperature of a CPU.
 
-To accomplish this painlessly I have created this little helper library.
+To accomplish this painlessly I have created this library.
 
-With `BufferedObject` you will be able to buffer any data without altering your interface logic.
+With `BufferedObject` you will be able to buffer any data without altering your existing interface logic.
 
 Instead of manually buffering each property `BufferedObject` will automatically buffer the specified properties:
 
@@ -24,10 +25,10 @@ let bufferMe = {
 	`myDataID`: 10,
 
 	/*
-	 * Create a property called `cpuTemperatue` for me with the size of `100`.
+	 * This will create a property called `cpuTemperatue` with the buffer size of `10`.
 	 * Clear the buffer on `myDataID` value change.
 	 */
-	`cpuTemperature[100]@myDataID`: 33
+	`cpuTemperature[10]@myDataID`: 33
 }
 
 // Create our BufferedObject instance
@@ -46,7 +47,7 @@ console.log(bufferNew1)
 // ... and dynamically insert values with .update():
 let bufferNew2 = buffer.update({
 	`myDataID`: 10,
-	`cpuTemperature[100]@myDataID`: 99
+	`cpuTemperature[10]@myDataID`: 99
 })
 
 /*
@@ -60,7 +61,7 @@ console.log(bufferNew2)
 // the associated data ID value:
 let bufferNew3 = buffer.update({
 	`myDataID`: 12,
-	`cpuTemperature[100]@myDataID`: 99
+	`cpuTemperature[10]@myDataID`: 99
 })
 
 /*
