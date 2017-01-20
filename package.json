@@ -1,6 +1,6 @@
 {
   "name": "buffered-object",
-  "url": "https://github.com/marco-a/BufferedObject.js",
+  "url": "https://github.com/marco-a/buffered-object",
   "version": "1.0.0",
   "description": "A small class to enable buffering WebSocket (or similar) packets!",
   "main": "",
