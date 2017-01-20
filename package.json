@@ -1,5 +1,5 @@
 {
-  "name": "BufferedObject",
+  "name": "buffered-object",
   "version": "1.0.0",
   "description": "A small class to enable buffering WebSocket (or similar) packets!",
   "main": "",
