@@ -1,4 +1,4 @@
-import BufferedObject from './BufferedObject.js'
+import BufferedObject from `./BufferedObject.js`
 
 /**
  * DataContainer to be used with BufferedObject.
