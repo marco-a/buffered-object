@@ -77,4 +77,5 @@ Yes, just use [browserify](http://npmjs.com/browserify) or [webpack](http://npmj
 ## Why do you not use an options parameter instead?
 
 Because it is inconvenient and not flexible enough.
-The class is completely independent in this way.
+
+The class is completely independent with this design.
