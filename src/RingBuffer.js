@@ -10,7 +10,7 @@ export default function(size, initialValue) {
 	initialValue = initialValue || 0
 
 	if (!Helper.isNumber(size) || size <= 0) {
-		throw new Error(`Invalid value for RingBuffer size! size = ${size}`)
+		Helper.error(`Invalid value for RingBuffer size! size = ${size}`)
 	}
 
 	for (let i = 0; i < size; ++i) {

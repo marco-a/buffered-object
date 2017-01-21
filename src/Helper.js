@@ -2,6 +2,10 @@ export default (function() {
 	let debug = true
 
 	let Helper = {
+		error: (msg) => {
+			throw new Error(`[BufferedObject] ${msg}`)
+		},
+
 		warn: (msg) => {
 			if (debug !== true) {
 				return

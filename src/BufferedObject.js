@@ -91,7 +91,7 @@ export default (function(undefined) {
 						state = DATAID_WAIT
 					} else {
 						if (!Helper.isDigit(char)) {
-							throw new Error(`Unexpected character "${char}", expected a digit instead!`)
+							Helper.error(`Unexpected character "${char}", expected a digit instead!`)
 						} else {
 							dataSize += char
 						}
@@ -100,7 +100,7 @@ export default (function(undefined) {
 
 				case DATAID_WAIT: {
 					if (char !== `@`) {
-						throw new Error(`Unexpected character "${char}, expected "@" instead.`)
+						Helper.error(`Unexpected character "${char}, expected "@" instead.`)
 					} else {
 						state = DATAID
 					}
@@ -133,7 +133,7 @@ export default (function(undefined) {
 
 	let traverseObject = (target, callback) => {
 		if (!Helper.isObject(target)) {
-			throw new Error(`target must be an object!`)
+			Helper.error(`target must be an object!`)
 		}
 
 		let traverse = (target, parent = '', data) => {
@@ -288,13 +288,13 @@ export default (function(undefined) {
 
 				if (chunks !== false) {
 					if (!Helper.isObject(parent)) {
-						throw new Error(`Unknown error`)
+						Helper.error(`Unknown error`)
 					} else if (!parent.hasOwnProperty(chunks.dataID)) {
-						throw new Error(`Data ID property "${chunks.dataID}" is missing for "${path}"!`)
+						Helper.error(`Data ID property "${chunks.dataID}" is missing for "${path}"!`)
 					} else if (parent.hasOwnProperty(chunks.propName)) {
-						throw new Error(`Buffered property "${chunks.propName}" already exists!`)
+						Helper.error(`Buffered property "${chunks.propName}" already exists!`)
 					} else if (!(path in buffers)) {
-						throw new Error(`An unknown error occurred!`)
+						Helper.error(`An unknown error occurred!`)
 					} else {
 						let buffer      = buffers[path]
 						let newDataID   = parent[chunks.dataID]
