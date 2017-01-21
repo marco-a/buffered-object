@@ -321,21 +321,23 @@ export default (function(undefined) {
 							let initalValue = undefined
 
 							switch (valueType) {
-								case '[object String]': {
+								case 'string': {
 									initalValue = ''
 								} break
 
-								case '[object Number]': {
+								case 'number': {
 									initalValue = 0
 								} break
 							}
 
+							// Initialize data container
 							buffer.obj = new DataContainer(chunks.dataSize, initalValue)
 
+							// Insert first value
 							buffer.obj.insert(newValue)
 
 							// Save type for comparsion in future
-							buffer.valueType = Helper.getType(newValue)
+							buffer.valueType = valueType
 						} else if (insert === true) {
 							buffer.obj.insert(newValue)
 

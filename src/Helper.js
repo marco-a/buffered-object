@@ -56,23 +56,23 @@ export default (function() {
 		},
 
 		isArray: (v) => {
-			return Object.prototype.toString.call(v) === `[object Array]`
+			return Helper.getType(v) === `array`
 		},
 
 		isObject: (v) => {
-			return Object.prototype.toString.call(v) === `[object Object]`
+			return Helper.getType(v) === `object`
 		},
 
 		isString: (v) => {
-			return Object.prototype.toString.call(v) === `[object String]`
+			return Helper.getType(v) === `string`
 		},
 
 		isNumber: (v) => {
-			return Object.prototype.toString.call(v) === `[object Number]`
+			return Helper.getType(v) === `number`
 		},
 
 		isBoolean: (v) => {
-			return Object.prototype.toString.call(v) === `[object Number]`
+			return Helper.getType(v) === `boolean`
 		},
 
 		isPrimitive: (v) => {
@@ -80,7 +80,7 @@ export default (function() {
 		},
 
 		isFunction: (v) => {
-			return Object.prototype.toString.call(v) === `[object Function]`
+			return Helper.getType(v) === `function`
 		},
 
 		hasKey: (o, k) => {
@@ -88,7 +88,13 @@ export default (function() {
 		},
 
 		getType: (v) => {
-			return Object.prototype.toString.call(v)
+			let type = Object.prototype.toString.call(v)
+
+			type = type.substr(`[object `.length)
+
+			type = type.substr(0, type.length - 1)
+
+			return type
 		},
 
 		strReplace: (str, src, replace) => {
