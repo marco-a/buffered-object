@@ -217,6 +217,10 @@ export default (function(undefined) {
 		let buffers = {}
 		let numProps = bufferedProperties.length
 
+		let _toString = () => {
+			return `[BufferedObject<${numProps}>]`
+		}
+
 		/*
 		 * Use RingBuffer as fallback container.
 		 */
@@ -340,9 +344,7 @@ export default (function(undefined) {
 				Helper.warn(`Some properties are missing. <${updatedProperties} != ${numProps}>`)
 			}
 
-			obj.toString = () => {
-				return `[BufferedObject<${numProps}>]`
-			}
+			obj.toString = _toString
 
 			return obj
 		}
@@ -355,9 +357,7 @@ export default (function(undefined) {
 			return _updateOrGet(obj, true)
 		}
 
-		this.toString = () => {
-			return `[BufferedObject<${numProps}>]`
-		}
+		this.toString = _toString
 
 		this.getBufferedProperties = () => {
 			let ret = []
