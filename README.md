@@ -32,7 +32,7 @@ let bufferMe = {
 }
 
 // Create our BufferedObject instance
-let buffer = new BufferedObject(bufferMe, DataContainer)
+let buffer = new BufferedObject(bufferMe)
 
 // We can get our final object with the .get() method:
 let bufferNew1 = buffer.get()
@@ -75,7 +75,16 @@ console.log(bufferNew3)
 // buffered properties
 console.log(`${bufferNew3}`)
 console.log(`${buffer}`)
+
+// This will warn us because
+// we always pushed numbers and now
+// we are pushing a string
+let bufferNew4 = buffer.update({
+	'myDataID': 12,
+	'cpuTemperature[10]@myDataID': '100'
+})
 ```
+
 ## Can I use this in the browser?
 
 Yes, just use [browserify](http://npmjs.com/browserify) or [webpack](http://npmjs.com/webpack).

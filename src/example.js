@@ -1,39 +1,5 @@
 import BufferedObject from './BufferedObject.js'
 
-/**
- * DataContainer to be used with BufferedObject.
- */
-let DataContainer = function(size) {
-	console.log(`Initializing dataholder with size of ${size}`)
-
-	let array    = []
-	let index    = 0
-
-	for (let i = 0; i < size; ++i) {
-		array[i] = 0
-	}
-
-	/**
-	 * Inserts a value.
-	 */
-	this.insert = (value) => {
-		console.log(`Inserting value ${value}`)
-
-		array[array.length - index - 1] = value
-
-		if (++index >= array.length) {
-			index = 0
-		}
-	}
-
-	/**
-	 * Returns the array.
-	 */
-	this.get = () => {
-		return array.slice(0)
-	}
-}
-
 let bufferMe = {
 	/*
 	 * This is needed so the buffer can be cleared on the fly.
@@ -50,7 +16,7 @@ let bufferMe = {
 }
 
 // Create our BufferedObject instance
-let buffer = new BufferedObject(bufferMe, DataContainer)
+let buffer = new BufferedObject(bufferMe)
 
 // We can get our final object with the .get() method:
 let bufferNew1 = buffer.get()
