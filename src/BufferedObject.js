@@ -214,7 +214,7 @@ export default (function(undefined) {
 	 */
 	let BufferedObject = function(obj, DataContainer) {
 		if (!Helper.isObject(obj)) {
-			Helper.error(`This library works only with objects!`)
+			Helper.error(`This library only works with objects!`)
 		}
 
 		let bufferedProperties = getAllBufferedProperties(obj)
