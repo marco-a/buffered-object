@@ -213,6 +213,10 @@ export default (function(undefined) {
 	 *	example.update(exampleStructure)
 	 */
 	let BufferedObject = function(obj, DataContainer) {
+		if (!Helper.isObject(obj)) {
+			Helper.error(`This library works only with objects!`)
+		}
+
 		let bufferedProperties = getAllBufferedProperties(obj)
 		let buffers = {}
 		let numProps = bufferedProperties.length
