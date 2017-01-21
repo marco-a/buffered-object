@@ -281,7 +281,7 @@ export default (function(undefined) {
 			/** Work on a copy **/
 			obj = Helper.copyObject(obj)
 
-			let validProperties = 0
+			let updatedProperties = 0
 
 			traverseObject(obj, (path, key, parent) => {
 				let chunks = _getChunksByPath(path)
@@ -326,7 +326,7 @@ export default (function(undefined) {
 
 						buffer.dataID = newDataID
 
-						++validProperties
+						++updatedProperties
 					}
 
 					// Delete data property
@@ -336,8 +336,8 @@ export default (function(undefined) {
 				}
 			})
 
-			if (validProperties !== numProps) {
-				Helper.warn(`Some properties are missing. <${validProperties} != ${numProps}>`)
+			if (updatedProperties !== numProps) {
+				Helper.warn(`Some properties are missing. <${updatedProperties} != ${numProps}>`)
 			}
 
 			obj.toString = () => {
