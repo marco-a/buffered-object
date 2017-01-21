@@ -24,7 +24,7 @@
 export default (function(undefined) {
 	'use strict'
 
-	let debug = false
+	let debug = true
 
 	let Helper = {
 		warn: (msg) => {
@@ -61,12 +61,24 @@ export default (function(undefined) {
 			return Object.prototype.toString.call(v) === `[object Object]`
 		},
 
-		isPrimitive: (v) => {
-			return !Helper.isArray(v) && !Helper.isObject(v)
+		isString: (v) => {
+			return Object.prototype.toString.call(v) === `[object String]`
 		},
 
-		isString: (v) => {
-			return typeof(v) === `string`
+		isNumber: (v) => {
+			return Object.prototype.toString.call(v) === `[object Number]`
+		},
+
+		isBoolean: (v) => {
+			return Object.prototype.toString.call(v) === `[object Number]`
+		},
+
+		getType: (v) => {
+			return Object.prototype.toString.call(v)
+		},
+
+		isPrimitive: (v) => {
+			return !Helper.isArray(v) && !Helper.isObject(v)
 		},
 
 		strReplace: (str, src, replace) => {
@@ -325,8 +337,15 @@ export default (function(undefined) {
 							buffer.obj = new DataContainer(chunks.dataSize)
 
 							buffer.obj.insert(newValue)
+
+							// Save type for comparsion in future
+							buffer.valueType = Helper.getType(newValue)
 						} else if (insert === true) {
 							buffer.obj.insert(newValue)
+
+							if (Helper.getType(newValue) !== buffer.valueType) {
+								Helper.warn(`Mismatch of new inserted value! <${Helper.getType(newValue)} != ${buffer.valueType}>`)
+							}
 						}
 
 						parent[chunks.propName] = buffer.obj.get()

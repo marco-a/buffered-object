@@ -93,3 +93,11 @@ console.log(bufferNew3)
 // buffered properties
 console.log(`${bufferNew3}`)
 console.log(`${buffer}`)
+
+// This will warn us because
+// we always pushed numbers and now
+// we are pushing a string
+let bufferNew4 = buffer.update({
+	'myDataID': 12,
+	'cpuTemperature[10]@myDataID': '100'
+})
