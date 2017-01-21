@@ -85,16 +85,8 @@ let bufferNew4 = buffer.update({
 })
 ```
 
-## Does this work with deeply nested objects / arrays?
-
-Yes.
+It even works with deeply nested properties and arrays!
 
 ## Can I use this in the browser?
 
 Yes, just use [browserify](http://npmjs.com/browserify) or [webpack](http://npmjs.com/webpack).
-
-## Why do you not use an options parameter instead?
-
-Because it is inconvenient and not flexible enough.
-
-The class is completely independent with this design.
