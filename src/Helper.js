@@ -52,6 +52,14 @@ export default (function() {
 			return !Helper.isArray(v) && !Helper.isObject(v)
 		},
 
+		isFunction: (v) => {
+			return Object.prototype.toString.call(v) === `[object Function]`
+		},
+
+		hasKey: (o, k) => {
+			return k in o
+		},
+
 		getType: (v) => {
 			return Object.prototype.toString.call(v)
 		},

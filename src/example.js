@@ -67,3 +67,5 @@ let bufferNew4 = buffer.update({
 	'myDataID': 12,
 	'cpuTemperature[10]@myDataID': '100'
 })
+
+console.log(buffer.getBufferedProperties())

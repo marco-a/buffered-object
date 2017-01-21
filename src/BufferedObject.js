@@ -220,7 +220,37 @@ export default (function(undefined) {
 		/*
 		 * Use RingBuffer as fallback container.
 		 */
+		let useFallback = false
+
 		if (DataContainer === undefined) {
+			useFallback = true
+		} else if (!Helper.isFunction(DataContainer)) {
+				Helper.warn(`DataContainer is not a function!`)
+
+				useFallback = true
+		} else {
+			let testInstance = new DataContainer
+
+			if (!Helper.hasKey(testInstance, 'get')) {
+				Helper.warn(`DataContainer "get" function is missing!`)
+
+				useFallback = true
+			} else if (!Helper.hasKey(testInstance, 'insert')) {
+				Helper.warn(`DataContainer "insert" function is missing!`)
+
+				useFallback = true
+			} else if (!Helper.isFunction(testInstance.get)) {
+				Helper.warn(`DataContainer "get" is not a function!`)
+
+				useFallback = true
+			} else if (!Helper.isFunction(testInstance.insert)) {
+				Helper.warn(`DataContainer "insert" is not a function!`)
+
+				useFallback = true
+			}
+		}
+
+		if (useFallback) {
 			DataContainer = RingBuffer
 		}
 
@@ -327,6 +357,16 @@ export default (function(undefined) {
 
 		this.toString = () => {
 			return `[BufferedObject<${numProps}>]`
+		}
+
+		this.getBufferedProperties = () => {
+			let ret = []
+
+			for (let prop of bufferedProperties) {
+				ret.push(prop.path)
+			}
+
+			return ret
 		}
 
 		_updateOrGet(obj, true)
