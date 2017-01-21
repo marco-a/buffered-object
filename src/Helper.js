@@ -94,7 +94,7 @@ export default (function() {
 
 			type = type.substr(0, type.length - 1)
 
-			return type
+			return type.toLowerCase()
 		},
 
 		strReplace: (str, src, replace) => {
