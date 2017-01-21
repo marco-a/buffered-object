@@ -31,8 +31,6 @@ export default function(size, initialValue) {
 	let array    = []
 	let index    = 0
 
-	initialValue = initialValue || 0
-
 	if (!Helper.isNumber(size) || size <= 0) {
 		Helper.error(`Invalid value for RingBuffer size! size = ${size}`)
 	}

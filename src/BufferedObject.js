@@ -307,6 +307,7 @@ export default (function(undefined) {
 						let buffer      = buffers[path]
 						let newDataID   = parent[chunks.dataID]
 						let newValue    = parent[key]
+						let valueType   = Helper.getType(newValue)
 
 						// Data ID value changed
 						if (buffer.dataID !== newDataID) {
@@ -316,7 +317,20 @@ export default (function(undefined) {
 						}
 
 						if (buffer.obj === undefined) {
-							buffer.obj = new DataContainer(chunks.dataSize)
+
+							let initalValue = undefined
+
+							switch (valueType) {
+								case '[object String]': {
+									initalValue = ''
+								} break
+
+								case '[object Number]': {
+									initalValue = 0
+								} break
+							}
+
+							buffer.obj = new DataContainer(chunks.dataSize, initalValue)
 
 							buffer.obj.insert(newValue)
 
@@ -325,8 +339,8 @@ export default (function(undefined) {
 						} else if (insert === true) {
 							buffer.obj.insert(newValue)
 
-							if (Helper.getType(newValue) !== buffer.valueType) {
-								Helper.warn(`Mismatch of new inserted value! <${Helper.getType(newValue)} != ${buffer.valueType}>`)
+							if (valueType !== buffer.valueType) {
+								Helper.warn(`Mismatch of new inserted value! <${valueType} != ${buffer.valueType}>`)
 							}
 						}
 
