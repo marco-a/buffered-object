@@ -73,8 +73,8 @@ console.log(bufferNew3)
 
 // toString() will return the number of
 // buffered properties
-// ... or not? (WIP)
 console.log(`${bufferNew3}`)
+console.log(`${buffer}`)
 ```
 ## Can I use this in the browser?
 

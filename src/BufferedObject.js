@@ -347,6 +347,10 @@ export default (function(undefined) {
 				Helper.warn(`Some properties are missing. <${validProperties} != ${numProps}>`)
 			}
 
+			obj.toString = () => {
+				return `[BufferedObject<${numProps}>]`
+			}
+
 			return obj
 		}
 
