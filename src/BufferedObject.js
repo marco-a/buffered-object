@@ -226,7 +226,7 @@ export default (function(undefined) {
 		}
 
 		/*
-		 * Use RingBuffer as fallback container.
+		 * Use RingBuffer as DataContainer fallback.
 		 */
 		let useFallback = false
 
@@ -317,7 +317,6 @@ export default (function(undefined) {
 						}
 
 						if (buffer.obj === undefined) {
-
 							let initalValue = undefined
 
 							switch (valueType) {
