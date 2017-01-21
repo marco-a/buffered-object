@@ -360,7 +360,7 @@ export default (function(undefined) {
 			})
 
 			if (updatedProperties !== numProps) {
-				Helper.warn(`Some properties are missing. <${updatedProperties} != ${numProps}>`)
+				Helper.warn(`Some properties could not be updated! <${updatedProperties} != ${numProps}>`)
 			}
 
 			obj.toString = _toString
@@ -391,6 +391,6 @@ export default (function(undefined) {
 		_updateOrGet(obj, true)
 	}
 
-	// Return the buffered object
+	// Return class
 	return BufferedObject
 })()
