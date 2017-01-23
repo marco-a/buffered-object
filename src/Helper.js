@@ -103,6 +103,22 @@ export default (function() {
 
 		strContains: (str, contains) => {
 			return str.indexOf(contains) >= 0
+		},
+
+		fetchUntilChar: (str, char) => {
+			let ret = ''
+
+			for (let i = 0, len = str.length; i < len; ++i) {
+				let ch = str[i]
+
+				if (ch === char) {
+					return ret
+				} else {
+					ret += ch
+				}
+			}
+
+			return false
 		}
 	}
 

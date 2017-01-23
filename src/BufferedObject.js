@@ -27,6 +27,10 @@ import RingBuffer from './RingBuffer.js'
 export default (function(undefined) {
 	'use strict'
 
+	let __debug = (...args) => {
+		//console.log(...args)
+	}
+
 	/**
 	 * Extracts all needed information from the property name
 	 * and returns the infos as an object:
@@ -37,14 +41,13 @@ export default (function(undefined) {
 	 *
 	 * Examples
 	 *
-	 *	extractChunksFromName('prop[100]@id')
+	 *	parsePropertyName('prop[100]@id')
 	 *	{
 	 *		propName: 'prop',
 	 *		dataSize: 100,
 	 *		dataID: 'id'
 	 *	}
-
-	 *	extractChunksFromName('@@abc@@[100]@@@[]@@id')
+	 *	parsePropertyName('@@abc@@[100]@@@[]@@id')
 	 *	{
 	 *		propName: '@@abc@@',
 	 *		dataSize: 100,
@@ -52,7 +55,7 @@ export default (function(undefined) {
 	 *	}
 	 *
 	 */
-	let extractChunksFromName = (name) => {
+	let parsePropertyName = (name) => {
 		let propName = ''
 		let dataSize = 0
 		let dataID   = ''
@@ -99,9 +102,11 @@ export default (function(undefined) {
 				} break
 
 				case DATAID_WAIT: {
-					if (char !== `@`) {
-						Helper.error(`Unexpected character "${char}, expected "@" instead.`)
+					if (char !== `@` && char !== `#`) {
+						Helper.error(`Unexpected character "${char}, expected "@" or "#" instead.`)
 					} else {
+						dataID = char
+
 						state = DATAID
 					}
 				} break
@@ -117,6 +122,8 @@ export default (function(undefined) {
 		}
 
 		if (state !== DATAID) {
+			Helper.error(`Missing informations for "${name}"!`)
+
 			return false
 		}
 
@@ -131,264 +138,203 @@ export default (function(undefined) {
 		}
 	}
 
-	let traverseObject = (target, callback) => {
-		if (!Helper.isObject(target)) {
-			Helper.error(`target must be an object!`)
+	let handleBufferedProperty = (dataContainer, props, root, bufferKey, info, valueToInsert) => {
+		// Remove '^'
+		info.propName = info.propName.substr(1)
+
+		// -- Extract Data ID
+		if (info.dataID[0] === '@') {
+			let dataIDProp = info.dataID.substr(1)
+
+			if (!Helper.hasKey(root, dataIDProp)) {
+				Helper.error(`Data ID property "${dataIDProp}" is missing!`)
+			}
+
+			info.dataID = root[dataIDProp]
+
+			// Delete data id
+			delete root[dataIDProp]
+		} else {
+			info.dataID = info.dataID.substr(1)
 		}
 
-		let traverse = (target, parent = '', data) => {
-			if (Helper.isArray(target)) {
-				for (let len = target.length, i = 0; i < len; ++i) {
-					let value = target[i]
+		if (!Helper.isPrimitive(info.dataID)) {
+			Helper.error(`Data ID value must be either a string or number!`)
+		}
+		// -- Extract Data ID
 
-					parent += `[${i}]`
+		if (Helper.hasKey(root, info.propName)) {
+			Helper.error(`Desired property name "${info.propName}" is already taken!`)
+		}
 
-					traverse(value, parent, {
-						key: i,
-						parent: target
-					})
-				}
-			} else if (Helper.isObject(target)) {
-				for (let key in target) {
-					if (!target.hasOwnProperty(key)) continue
-					let value = target[key]
+		let buffer      = null
+		let needsReinit = false
+
+		if (Helper.hasKey(props, bufferKey)) {
+			buffer = props[bufferKey]
+
+			let prevDataID   = buffer.dataID
+			let prevDataSize = buffer.dataSize
+
+			if (prevDataID != info.dataID) {
+				__debug(`${bufferKey}: data id change <${prevDataID} != ${info.dataID}>!`)
+
+				needsReinit = true
+			} else if (prevDataSize != info.dataSize) {
+				__debug(`${bufferKey}: data size change <${prevDataSize} != ${info.dataSize}!`)
+
+				needsReinit = true
+			} else {
+				__debug(`${bufferKey}: update`)
+			}
+		} else {
+			needsReinit = true
+		}
+
+		if (needsReinit) {
+			__debug(`${bufferKey}: init`)
+
+			if (buffer !== null) {
+				__debug(`${bufferKey}: delete`)
+
+				buffer.container = null
+
+				delete buffer.container
+			}
+
+			let initialValue = null
+
+			switch (Helper.getType(valueToInsert)) {
+				case `string`:
+					initialValue = ``
+				break
+
+				case `number`:
+					initialValue = 0
+				break
+
+				case `object`:
+					initialValue = {}
+				break
+
+				case `array`:
+					initialValue = []
+				break
+			}
+
+			buffer = {
+				container: new dataContainer(info.dataSize, initialValue)
+			}
+		}
+
+		buffer.container.insert(valueToInsert)
+
+		// -- update buffer 
+		buffer.dataID       = info.dataID
+		buffer.dataSize     = info.dataSize
+		buffer.updated      = true
+
+		props[bufferKey]    = buffer
+
+		root[info.propName] = buffer.container.get()
+	}
+
+	let BufferedObject = function(dataContainer, opts) {
+		this.bufferedProperties = {}
+
+		if (dataContainer === undefined) {
+			dataContainer = RingBuffer
+		}
+
+		let traverse = (value, parentKeyPath, parent) => {
+			let isRootCall = parent === undefined
+
+			if (parentKeyPath === undefined) {
+				parentKeyPath = ``
+			}
+
+			if (Helper.isObject(value)) {
+				for (let key in value) {
+					if (!value.hasOwnProperty(key)) continue
 
 					let escapedKey = Helper.strReplace(key, `'`, `\\'`)
+					let keyPath    = `${parentKeyPath}['${escapedKey}']`
 
-					parent += `['${escapedKey}']`
+					if (escapedKey[0] === '^') {
+						let bufferInfo = parsePropertyName(key)
 
-					traverse(value, parent, {
-						key: escapedKey,
-						parent: target
-					})
-				}
-			} else {
-				callback(parent, data.key, data.parent)
-			}
-		}
+						if (bufferInfo !== false) {
+							let bufferKey = `${parentKeyPath}['${bufferInfo.propName}']`
+							let newValue  = value[key]
 
-		traverse(target)
-	}
+							// -- delete property
+							delete value[key]
 
-	let getAllBufferedProperties = (obj) => {
-		let props = []
-
-		traverseObject(obj, (path, key, parent) => {
-			let chunks = extractChunksFromName(key)
-
-			if (chunks !== false) {
-				props.push({
-					path: path,
-					chunks: chunks
-				})
-			}
-		})
-
-		return props
-	}
-
-	/**
-	 * BufferedObject class.
-	 *
-	 * Example
-	 *
-	 *	let exampleStructure = {
-	 *		'dataID'             : 1337,
-	 *		'cpuTemp[100]@dataID': 100
-	 *	}
-	 *
-	 *	let example = new BufferedObject(exampleStrucutre, DataContainer)
-	 *
-	 *	// Get the transformed object:
-	 *	let transformedExample = example.get()
-	 *
-	 *	// This will return:
-	 *	{
-	 *		cpuTemp: [DataContainer().get()]
-	 *	}
-	 *
-	 *	// Update with the same value
-	 *	// This will call [Instance of DataContainer].insert(theValue)
-	 *	// Also this will return the updated data structure
-	 *	example.update(exampleStructure)
-	 */
-	let BufferedObject = function(obj, DataContainer) {
-		if (!Helper.isObject(obj)) {
-			Helper.error(`This library only works with objects!`)
-		}
-
-		let bufferedProperties = getAllBufferedProperties(obj)
-		let buffers = {}
-		let numProps = bufferedProperties.length
-
-		let _toString = () => {
-			return `[BufferedObject<${numProps}>]`
-		}
-
-		/*
-		 * Use RingBuffer as DataContainer fallback.
-		 */
-		let useFallback = false
-
-		if (DataContainer === undefined) {
-			useFallback = true
-		} else if (!Helper.isFunction(DataContainer)) {
-				Helper.warn(`DataContainer is not a function!`)
-
-				useFallback = true
-		} else {
-			let testInstance = new DataContainer
-
-			if (!Helper.hasKey(testInstance, 'get')) {
-				Helper.warn(`DataContainer "get" function is missing!`)
-
-				useFallback = true
-			} else if (!Helper.hasKey(testInstance, 'insert')) {
-				Helper.warn(`DataContainer "insert" function is missing!`)
-
-				useFallback = true
-			} else if (!Helper.isFunction(testInstance.get)) {
-				Helper.warn(`DataContainer "get" is not a function!`)
-
-				useFallback = true
-			} else if (!Helper.isFunction(testInstance.insert)) {
-				Helper.warn(`DataContainer "insert" is not a function!`)
-
-				useFallback = true
-			}
-		}
-
-		if (useFallback) {
-			DataContainer = RingBuffer
-		}
-
-		/*
-		 * Receive all properties that need to be buffered.
-		 */
-		for (let bufferedProperty of bufferedProperties) {
-			buffers[bufferedProperty.path] = {
-				dataID: undefined,
-				obj: undefined
-			}
-		}
-
-		/*
-		 * Returns all informations for a given path.
-		 */
-		let _getChunksByPath = (path) => {
-			for (let bufferedProperty of bufferedProperties) {
-				if (bufferedProperty.path === path) {
-					return bufferedProperty.chunks
-				}
-			}
-
-			return false
-		}
-
-		let _updateOrGet = (obj, insert = true) => {
-			/** Work on a copy **/
-			obj = Helper.copyObject(obj)
-
-			let updatedProperties = 0
-
-			traverseObject(obj, (path, key, parent) => {
-				let chunks = _getChunksByPath(path)
-
-				if (chunks !== false) {
-					if (!Helper.isObject(parent)) {
-						Helper.error(`Unknown error`)
-					} else if (!parent.hasOwnProperty(chunks.dataID)) {
-						Helper.error(`Data ID property "${chunks.dataID}" is missing for "${path}"!`)
-					} else if (parent.hasOwnProperty(chunks.propName)) {
-						Helper.error(`Buffered property "${chunks.propName}" already exists!`)
-					} else if (!(path in buffers)) {
-						Helper.error(`An unknown error occurred!`)
+							handleBufferedProperty(dataContainer, this.bufferedProperties, value, bufferKey, bufferInfo, newValue)
+						}
 					} else {
-						let buffer      = buffers[path]
-						let newDataID   = parent[chunks.dataID]
-						let newValue    = parent[key]
-						let valueType   = Helper.getType(newValue)
-
-						// Data ID value changed
-						if (buffer.dataID !== newDataID) {
-							//Helper.warn(`Data ID value changed! <${buffer.dataID} != ${newDataID}>`)
-
-							buffer.obj = undefined
-						}
-
-						if (buffer.obj === undefined) {
-							let initalValue = undefined
-
-							switch (valueType) {
-								case 'string': {
-									initalValue = ''
-								} break
-
-								case 'number': {
-									initalValue = 0
-								} break
-							}
-
-							// Initialize data container
-							buffer.obj = new DataContainer(chunks.dataSize, initalValue)
-
-							// Insert first value
-							buffer.obj.insert(newValue)
-
-							// Save type for comparsion in future
-							buffer.valueType = valueType
-						} else if (insert === true) {
-							buffer.obj.insert(newValue)
-
-							if (valueType !== buffer.valueType) {
-								Helper.warn(`Mismatch of new inserted value! <${valueType} != ${buffer.valueType}>`)
-							}
-						}
-
-						parent[chunks.propName] = buffer.obj.get()
-
-						buffer.dataID = newDataID
-
-						++updatedProperties
+						traverse(value[key], keyPath, value)
 					}
-
-					// Delete data property
-					delete parent[key]
-					// Delete data ID property
-					delete parent[chunks.dataID]
 				}
-			})
+			} else if (Helper.isArray(value)) {
+				let length = value.length
 
-			if (updatedProperties !== numProps) {
-				Helper.warn(`Some properties could not be updated! <${updatedProperties} != ${numProps}>`)
+				for (let i = 0; i < length; ++i) {
+					let keyPath = `${parentKeyPath}[${i}]`
+
+					traverse(value[i], keyPath, value)
+				}
 			}
 
-			obj.toString = _toString
-
-			return obj
+			if (isRootCall) {
+				return value
+			}
 		}
 
-		this.get = () => {
-			return _updateOrGet(obj, false)
+		this.numBufferedProps = () => {
+			let num = 0
+
+			for (let key in this.bufferedProperties) {
+				if (!this.bufferedProperties.hasOwnProperty(key)) continue
+
+				++num
+			}
+
+			return num
+		}
+
+		this.toString = () => {
+			return `[BufferedObject <${this.numBufferedProps()}>]`
 		}
 
 		this.update = (obj) => {
-			return _updateOrGet(obj, true)
-		}
+			if (!Helper.isObject(obj)) {
+				Helper.error(`Invalid value!`)
+			}
 
-		this.toString = _toString
+			for (let prop in this.bufferedProperties) {
+				this.bufferedProperties[prop].updated = false
+			}
 
-		this.getBufferedProperties = () => {
-			let ret = []
+			let ret = traverse(Helper.copyObject(obj))
 
-			for (let prop of bufferedProperties) {
-				ret.push(prop.path)
+			for (let prop in this.bufferedProperties) {
+				if (!this.bufferedProperties[prop].updated) {
+					__debug(`Deleting ${prop}`)
+
+					this.bufferedProperties[prop].container = null
+
+					delete this.bufferedProperties[prop]
+				}
+			}
+
+			ret.toString = () => {
+				return '[BufferedObject]'
 			}
 
 			return ret
 		}
 
-		_updateOrGet(obj, true)
 	}
 
 	// Return class

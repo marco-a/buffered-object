@@ -16,76 +16,115 @@ Instead of manually buffering each property `BufferedObject` will automatically 
 ```js
 import BufferedObject from './BufferedObject.js'
 
-let bufferMe = {
-	/*
-	 * This is needed so the buffer can be cleared on the fly.
-	 * The buffer will be automatically cleared when the value of
-	 * `myDataID` changes.
-	 */
-	'myDataID': 10,
-
-	/*
-	 * Create a property called `cpuTemperatue` for me with the size of `10`.
-	 * Clear the buffer on `myDataID` value change.
-	 */
-	'cpuTemperature[10]@myDataID': 33
+let jsonPrettyPrint = (json) => {
+	console.log(JSON.stringify(json, null, 4))
 }
 
-// Create our BufferedObject instance
-let buffer = new BufferedObject(bufferMe)
+let CPUTemperaturePacketDataID = 1
 
-// We can get our final object with the .get() method:
-let bufferNew1 = buffer.get()
+let CPUTemperaturePacket = (value) => {
+	return {
+		system: {
+			cpus: [{
+				'tempID': CPUTemperaturePacketDataID,
+				'^temperature[5]@tempID': value
+			}]
+		}
+	}
+}
+
+// Create buffered object instance
+let BufferedCPUTemp = new BufferedObject;
+
+// Push our first value
+jsonPrettyPrint(BufferedCPUTemp.update(CPUTemperaturePacket(33)))
+/*
+ This will return:
+
+ {
+ 	"system": {
+ 		"cpus": [
+ 			{
+ 				"temperature": [
+ 					0,
+ 					0,
+ 					0,
+ 					0,
+ 					33 <-- our first value is here
+ 				]
+ 			}
+ 		]
+ 	}
+ }
+*/
+
+// Push value 44
+BufferedCPUTemp.update(CPUTemperaturePacket(44))
+
+// Push value 55
+BufferedCPUTemp.update(CPUTemperaturePacket(55))
+
+// Push value 66
+jsonPrettyPrint(BufferedCPUTemp.update(CPUTemperaturePacket(66)))
 
 /*
- {
- 	cpuTemperature: [0, 0, 0, 0, 0, 0, 0, 0, 0, 33]
- }
- */
-console.log(bufferNew1)
+ This will return:
 
-// ... and dynamically insert values with .update():
-let bufferNew2 = buffer.update({
-	'myDataID': 10,
-	'cpuTemperature[10]@myDataID': 99
-})
+ {
+ 	"system": {
+ 		"cpus": [
+ 			{
+ 				"temperature": [
+ 					0,
+ 					66,
+ 					55,
+ 					44,
+ 					33 <-- our first value is here
+ 				]
+ 			}
+ 		]
+ 	}
+ }
+*/
+
+
+// Push value 77 and clear history
+CPUTemperaturePacketDataID++
+
+jsonPrettyPrint(BufferedCPUTemp.update(CPUTemperaturePacket(77)))
 
 /*
- {
- 	cpuTemperature: [0, 0, 0, 0, 0, 0, 0, 0, 99, 33]
- }
- */
-console.log(bufferNew2)
+ This will return:
 
-// If we want to reset our buffer we need to change
-// the associated data ID value:
-let bufferNew3 = buffer.update({
-	'myDataID': 12,
-	'cpuTemperature[10]@myDataID': 99
+ {
+ 	"system": {
+ 		"cpus": [
+ 			{
+ 				"temperature": [
+ 					0,
+ 					0,
+ 					0,
+ 					0,
+ 					77 <-- our first value is here
+ 				]
+ 			}
+ 		]
+ 	}
+ }
+*/
+
+// It is also possible to directly assign a data id with #
+BufferedCPUTemp.update({
+	system: {
+		cpus: [{
+			'^temperature[5]#2': 99
+		}]
+	}
 })
 
-/*
- {
- 	cpuTemperature: [0, 0, 0, 0, 0, 0, 0, 0, 99]
- }
- */
-console.log(bufferNew3)
-
-// toString() will return the number of
-// buffered properties
-console.log(`${bufferNew3}`)
-console.log(`${buffer}`)
-
-// This will warn us because
-// we always pushed numbers and now
-// we are pushing a string
-let bufferNew4 = buffer.update({
-	'myDataID': 12,
-	'cpuTemperature[10]@myDataID': '100'
-})
+// If the property disppears then the internal buffer will be deleted
+jsonPrettyPrint(BufferedCPUTemp.update({}))
 ```
-
-It even works with deeply nested properties and arrays!
 
 ## Can I use this in the browser?
 
