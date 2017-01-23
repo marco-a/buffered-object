@@ -1,9 +1,9 @@
 {
   "name": "buffered-object",
   "url": "https://github.com/marco-a/buffered-object",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "A small class to enable buffering WebSocket (or similar) packets!",
-  "main": "",
+  "main": "./es5/BufferedObject.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "compile": "./compile.sh"
