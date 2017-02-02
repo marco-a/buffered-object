@@ -3,7 +3,7 @@
   "url": "https://github.com/marco-a/object-buffer",
   "version": "3.0.0",
   "description": "Deprecated in favor of object-buffer.",
-  "main": "./es5/BufferedObject.js",
+  "main": "",
   "scripts": {
     "postinstall": "echo \"This package is deprecated in favor of object-buffer\" && exit 1"
   },
