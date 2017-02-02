@@ -1,3 +1,7 @@
+*Deprecated in favor of [object-buffer](https://npmjs.com/object-buffer)*
+
+---
+
 # buffered-object
 A small class to enable buffering WebSocket (or similar) packets!
 
